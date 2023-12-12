@@ -1,36 +1,36 @@
 import re
-# row = '#.??#????. 1,5,1'
-# row = '.???.??????? 1,1,2,1'
-row = '?###???????? 3,2,1'
-row, nums = row.split()
-# 1. Simplify row
-nums = [int(i) for i in nums.split(',')]
-print(nums)
+with open('input.txt') as rf:
+    rows = [ln.strip() for ln in rf.readlines()]
 
 
-def collect(wanted_char):
-    groups = {}
-    prev = ''
-    for indx, char in enumerate(row):
-        if indx + 1 == len(row):
-            if prev:
-                groups[indx-1] = prev
-        if char == wanted_char:
-            prev += wanted_char
-        else:
-            if prev:
-                groups[indx-1] = prev
-            prev = ''
-    return groups
+
+# def collect(wanted_char):
+#     groups = {}
+#     prev = ''
+#     for indx, char in enumerate(row):
+#         if indx + 1 == len(row):
+#             if prev:
+#                 groups[indx-1] = prev
+#         if char == wanted_char:
+#             prev += wanted_char
+#         else:
+#             if prev:
+#                 groups[indx-1] = prev
+#             prev = ''
+#     return groups
+
+ttl_p1 = 0
 
 
-def try_options(s, nums, indx, full_str=''):
+def try_options(s, nums, indx=0, full_str=''):
+    global ttl_p1
     if not full_str:
         full_str = s
     if not s:
-        print(f"CHECK FINAL STRING: {full_str}")
         groups = [len(x) for x in re.findall('#+', full_str)]
-        print(groups, nums)
+        if str(groups) == str(nums):
+            # print(f"CHECK FINAL STRING: {full_str} {nums=}")
+            ttl_p1 += 1
         return
 
     if s[0] == '?':
@@ -40,25 +40,10 @@ def try_options(s, nums, indx, full_str=''):
         try_options(s[1:], nums, indx+1, full_str)
 
 
+# try_options(row, nums, 0)
 
-broken_g = collect('#')
-unknown_g = collect('?')
-print(f"{broken_g=}")
-print(f"{unknown_g=}")
-try_options(row, nums, 0)
-# Get groups of ?
-# short_row = ''
-
-"""
-.###.##.#...
-.###.##..#..
-.###.##...#.
-.###.##....#
-.###..##.#..
-.###..##..#.
-.###..##...#
-.###...##.#.
-.###...##..#
-.###....##.#"""
-
-
+for row in rows:
+    row, nums = row.split()
+    nums = [int(i) for i in nums.split(',')]
+    try_options(row, nums, 0)
+print(f"{ttl_p1=}")
