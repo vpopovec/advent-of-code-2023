@@ -1,7 +1,8 @@
 import re
+import time
+from functools import cache
 with open('input.txt') as rf:
     rows = [ln.strip() for ln in rf.readlines()]
-
 
 
 # def collect(wanted_char):
@@ -22,28 +23,111 @@ with open('input.txt') as rf:
 ttl_p1 = 0
 
 
-def try_options(s, nums, indx=0, full_str=''):
+def old_try_options(s, nums, indx=0, full_str=''):
     global ttl_p1
     if not full_str:
         full_str = s
     if not s:
         groups = [len(x) for x in re.findall('#+', full_str)]
-        if str(groups) == str(nums):
+        if ','.join([str(x) for x in groups]) == str(nums):
             # print(f"CHECK FINAL STRING: {full_str} {nums=}")
             ttl_p1 += 1
-        return
+        return full_str
 
     if s[0] == '?':
         for char in ['.', '#']:
-            try_options(s[1:], nums, indx+1, f"{full_str[:indx]}{char}{full_str[indx+1:]}")
+            return old_try_options(s[1:], nums, indx+1, f"{full_str[:indx]}{char}{full_str[indx+1:]}")
     else:
-        try_options(s[1:], nums, indx+1, full_str)
+        return old_try_options(s[1:], nums, indx+1, full_str)
 
 
-# try_options(row, nums, 0)
+# @cache
+# def try_options(full_str, nums, indx=0):
+#     global ttl_p1
+#     if indx == len(full_str):
+#         groups = [len(x) for x in re.findall('#+', full_str)]
+#         if ','.join([str(x) for x in groups]) == nums:
+#             # print(f"CHECK FINAL STRING: {full_str} {nums=}")
+#             ttl_p1 += 1
+#         # print(f"CHECK FINAL STRING: {full_str} {groups=} {nums=}")
+#         return full_str, nums, indx
+#
+#     if full_str[indx] == '?':
+#         for char in ['.', '#']:
+#             try_options(f"{full_str[:indx]}{char}{full_str[indx+1:]}", nums, indx+1)
+#     else:
+#         return try_options(full_str, nums, indx+1)
 
+
+# ChatGPT
+# @cache
+# def try_options(full_str, nums, indx=0):
+#     # Note: Avoid using global variables, as they might affect caching behavior
+#
+#     if indx == len(full_str):
+#         groups = [len(x) for x in re.findall('#+', full_str)]
+#         if ','.join(map(str, groups)) == nums:
+#             return full_str, nums, indx
+#         return None  # Returning None when conditions are not met
+#
+#     if full_str[indx] == '?':
+#         results = []
+#         for char in ['.', '#']:
+#             result = try_options(f"{full_str[:indx]}{char}{full_str[indx+1:]}", nums, indx+1)
+#             if result:
+#                 results.append(result)
+#         return results
+#     else:
+#         return try_options(full_str, nums, indx+1)
+
+
+# ChatGPT #2
+# @cache
+# def try_options(full_str, nums, indx=0, ttl_p1=0):
+#     if indx == len(full_str):
+#         groups = [len(x) for x in re.findall('#+', full_str)]
+#         if ','.join(map(str, groups)) == nums:
+#             return ttl_p1 + 1
+#         return ttl_p1
+#
+#     if full_str[indx] == '?':
+#         for char in ['.', '#']:
+#             ttl_p1 = try_options(f"{full_str[:indx]}{char}{full_str[indx+1:]}", nums, indx+1, ttl_p1)
+#     else:
+#         ttl_p1 = try_options(full_str, nums, indx+1, ttl_p1)
+#
+#     return ttl_p1
+
+
+@cache
+def try_options(full_str, nums, indx=0, ttl_p1=0, ttl_hashes=0):
+    if indx == len(full_str):
+        groups = [len(x) for x in re.findall(r'#+', full_str)]
+        if ','.join(map(str, groups)) == nums:
+            return ttl_p1 + 1
+        return ttl_p1
+
+    if full_str[indx] == '?':
+        for char in ['.', '#']:
+            new_str = f"{full_str[:indx]}{char}{full_str[indx+1:]}"
+            ttl_p1 = try_options(new_str, nums, indx+1, ttl_p1)
+
+    else:
+        ttl_p1 = try_options(full_str, nums, indx+1, ttl_p1)
+
+    return ttl_p1
+
+ttl = 0
+t = time.time()
 for row in rows:
     row, nums = row.split()
-    nums = [int(i) for i in nums.split(',')]
-    try_options(row, nums, 0)
-print(f"{ttl_p1=}")
+    # row = '?'.join([row]*5)
+    # nums = ','.join([nums]*5)
+    print(f"{row=} {nums=}")
+    res = try_options(row, nums, 0, 0)
+    ttl += res
+    print(res)
+print(f"{ttl=}")
+print(round(time.time()-t, 4), 'sec')
+
+[[[[[[[[[('.###....##.#', '3,2,1', 12)]]]], [[[[('.###...##..#', '3,2,1', 12)], [('.###...##.#.', '3,2,1', 12)]]]]], [[[[[('.###..##...#', '3,2,1', 12)], [('.###..##..#.', '3,2,1', 12)]], [[('.###..##.#..', '3,2,1', 12)]]]]]], [[[[[[('.###.##....#', '3,2,1', 12)], [('.###.##...#.', '3,2,1', 12)]], [[('.###.##..#..', '3,2,1', 12)]]], [[[('.###.##.#...', '3,2,1', 12)]]]]]]]]]
