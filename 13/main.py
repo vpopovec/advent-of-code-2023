@@ -3,7 +3,6 @@ with open('input.txt') as rf:
 
 
 def find_line(rows, cols, orig_pos=0):
-    # ['..##..##.', '..#.##.#.', '##......#', '##......#', '..#.##.#.', '..##..##.', '#.#.##.#.']
     for col_indx, col in enumerate(cols):
         if col_indx == len(cols) - 1:
             break
@@ -22,7 +21,6 @@ def find_line(rows, cols, orig_pos=0):
                 if not orig_pos or (col_indx, 0, return_val) != orig_pos:
                     return return_val, (col_indx, 0, return_val)
 
-        # TODO: Add row
     for row_indx, row in enumerate(rows):
         if row_indx == len(rows) - 1:
             break
