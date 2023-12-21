@@ -19,14 +19,13 @@ for k, vl in d.items():
 
 ttl_pulses = {0: 0, 1: 0}
 end_cycle = 0
-# for j in range(1, 50):
-for j in range(1, 1002):
+for j in range(1, 1001):
     # TODO: Count button presses
     todo = [('broadcaster', 0, '')]
-    for i in range(160):  # TODO: try increasing
-        print(f'todo {j}', todo)
+    for i in range(10**9):  # TODO: try increasing
+        # print(f'todo {j}', todo)
         if not todo:  # Press button again
-            print(ttl_pulses)
+            # print(ttl_pulses)
             break
         nm, high_pulse, prev_nm = todo.pop(0)
         ttl_pulses[high_pulse] += 1
@@ -66,14 +65,16 @@ for j in range(1, 1002):
             #     continue
             # for td in todo:
             #     ttl_pulses[td[1]] += 1
-            print("SHOULD BREAK", ttl_pulses, f"{todo}")
+            # print("SHOULD BREAK", ttl_pulses, f"{todo}")
             # if end_cycle and not todo:
             #     break
 
+    if j % 100 == 0:
+        print(f"button={j}", ttl_pulses)
     # if end_cycle:
     #     break
 
-print(j, f"{ttl_pulses=}")
+print('presses:', j, f"{ttl_pulses=}")
 to_mult = 1000 / j
 res = ttl_pulses[0] * to_mult * ttl_pulses[1] * to_mult
 print(res)
