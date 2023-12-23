@@ -19,15 +19,21 @@ for k, vl in d.items():
 
 ttl_pulses = {0: 0, 1: 0}
 end_cycle = 0
-for j in range(1, 1001):
+# for j in range(1, 1001:
+wanted = {'st', 'tn', 'hh', 'dt'}
+for j in range(1, 5000):
     # TODO: Count button presses
     todo = [('broadcaster', 0, '')]
+    # rx_num = 0
     for i in range(10**9):  # TODO: try increasing
         # print(f'todo {j}', todo)
         if not todo:  # Press button again
             # print(ttl_pulses)
             break
         nm, high_pulse, prev_nm = todo.pop(0)
+        # if nm == 'rx' and not high_pulse:
+        #     rx_num += 1
+
         ttl_pulses[high_pulse] += 1
         if nm not in d:
             continue
@@ -69,8 +75,16 @@ for j in range(1, 1001):
             # if end_cycle and not todo:
             #     break
 
-    if j % 100 == 0:
-        print(f"button={j}", ttl_pulses)
+    for nm in wanted:
+        # print('check', nm, d[nm])
+        if d[nm]['inputs'] and all(d[nm]['inputs'].values()):
+            print('FOUND', nm, j, d[nm])
+
+    # if rx_num == 1:
+    #     break
+    # if j % 1 == 0:
+    #     print(f"{rx_num=} xxx")
+        # print(f"button={j}", ttl_pulses)
     # if end_cycle:
     #     break
 
